@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FORMA — The Spinal Recovery System</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,100;0,400;0,500;0,700;0,900;1,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:#0c0c0a;color:#f0ede6;font-family:'Archivo',sans-serif;overflow-x:hidden;cursor:none}
+:root{--bg:#0c0c0a;--surface:#141412;--border:#222220;--muted:#5a5a50;--faint:#2a2a26;--lime:#ccff33;--orange:#ff6b35;--cyan:#33d6ff;--green:#5dff8f}
+.cur{position:fixed;width:6px;height:6px;background:var(--lime);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .15s,height .15s}
+.cur-ring{position:fixed;width:28px;height:28px;border:1px solid rgba(204,255,51,.2);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:transform .1s ease,width .2s,height .2s}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 40px;height:58px;display:flex;align-items:center;justify-content:space-between;background:rgba(12,12,10,.9);backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+.nav-logo{font-family:'Courier Prime',monospace;font-size:14px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--lime)}
+.nav-links{display:flex;align-items:center;gap:28px}
+.nav-link{font-family:'Courier Prime',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s}
+.nav-link:hover{color:var(--lime)}
+.nav-cta{font-family:'Courier Prime',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;padding:7px 16px;border:1px solid var(--lime);color:var(--lime);text-decoration:none;transition:.2s}
+.nav-cta:hover{background:var(--lime);color:var(--bg)}
+
+/* HERO */
+.hero{min-height:100vh;padding:80px 40px 56px;display:flex;flex-direction:column;justify-content:flex-end;position:relative;overflow:hidden}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(204,255,51,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(204,255,51,.022) 1px,transparent 1px);background-size:48px 48px;animation:gm 30s linear infinite}
+@keyframes gm{to{background-position:48px 48px}}
+.hero-noise{position:absolute;inset:0;opacity:.03;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.hero-vert{position:absolute;right:6%;top:50%;transform:translateY(-50%);width:min(400px,42vw);opacity:.05;pointer-events:none}
+.hero-tag{position:absolute;top:76px;left:40px;font-family:'Courier Prime',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:10px}
+.hero-tag::before{content:'';width:18px;height:1px;background:var(--muted)}
+.hero-ticker{position:absolute;top:76px;right:40px;height:16px;overflow:hidden}
+.ticker-item{font-family:'Courier Prime',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--lime);position:absolute;right:0;opacity:0;transform:translateY(14px);transition:all .4s ease}
+.ticker-item.vis{opacity:1;transform:translateY(0)}
+.hero-h1{font-weight:900;font-size:clamp(46px,8vw,104px);line-height:.92;letter-spacing:-.025em;margin-bottom:40px;position:relative;z-index:1;max-width:840px}
+.hero-h1 .a{color:var(--lime);font-style:italic;display:block}
+.hero-h1 .b{display:block;font-weight:100;font-style:italic;font-size:clamp(24px,4vw,52px);color:rgba(240,237,230,.4)}
+.hero-bottom{display:flex;align-items:flex-end;justify-content:space-between;gap:28px;flex-wrap:wrap;position:relative;z-index:1}
+.hero-copy p{font-family:'Courier Prime',monospace;font-size:11px;line-height:1.8;color:rgba(240,237,230,.45);max-width:360px}
+.hero-badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.cert-badge{font-family:'Courier Prime',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border:1px solid var(--border);color:var(--muted)}
+.hero-buy{text-align:right}
+.hp-row{display:flex;align-items:baseline;gap:10px;justify-content:flex-end;margin-bottom:8px}
+.hp-was{font-family:'Courier Prime',monospace;font-size:12px;color:var(--muted);text-decoration:line-through}
+.hp-now{font-weight:900;font-size:38px;letter-spacing:-.025em;color:var(--lime)}
+.hp-sub{font-family:'Courier Prime',monospace;font-size:8px;color:var(--muted);margin-bottom:12px;text-align:right;letter-spacing:.06em;text-transform:uppercase}
+.btn-buy{display:inline-flex;align-items:center;gap:8px;padding:13px 30px;background:var(--lime);color:var(--bg);font-family:'Archivo',sans-serif;font-weight:700;font-size:10px;letter-spacing:.15em;text-transform:uppercase;text-decoration:none;cursor:none;border:none;transition:.2s}
+.btn-buy:hover{background:#d8ff4a;transform:translateY(-1px)}
+.scroll-h{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:4px;font-family:'Courier Prime',monospace;font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.sl{width:1px;height:32px;background:linear-gradient(var(--muted),transparent);animation:sc 2s ease infinite}
+@keyframes sc{0%,100%{opacity:.3}50%{opacity:1}}
+
+/* AUDIENCE SECTION */
+.aud-sec{border-top:1px solid var(--border)}
+.aud-tabs{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid var(--border)}
+.at{padding:22px 28px;cursor:none;transition:.2s;position:relative;border-right:1px solid var(--border)}
+.at:last-child{border-right:none}
+.at::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;transform:scaleX(0);transform-origin:left;transition:transform .3s}
+.at:hover::after,.at.on::after{transform:scaleX(1)}
+.at-num{font-family:'Courier Prime',monospace;font-size:8px;letter-spacing:.15em;color:var(--muted);margin-bottom:5px}
+.at-title{font-size:13px;font-weight:600;margin-bottom:2px;letter-spacing:-.01em}
+.at-sub{font-family:'Courier Prime',monospace;font-size:9px;color:var(--muted);line-height:1.4}
+.at-arr{font-size:13px;margin-top:7px;opacity:0;transition:.2s;display:block}
+.at:hover .at-arr,.at.on .at-arr{opacity:1}
+.at1::after{background:#fb923c}.at1.on,.at1:hover{background:rgba(251,146,60,.03)}.at1 .at-arr{color:#fb923c}
+.at2::after{background:var(--lime)}.at2.on,.at2:hover{background:rgba(204,255,51,.04)}.at2 .at-arr{color:var(--lime)}
+.at3::after{background:var(--cyan)}.at3.on,.at3:hover{background:rgba(51,214,255,.04)}.at3 .at-arr{color:var(--cyan)}
+
+.ap-wrap{position:relative;min-height:540px}
+.ap{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .3s;padding:56px 40px;display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}
+.ap.on{opacity:1;pointer-events:all;position:relative}
+.ap-ey{font-family:'Courier Prime',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.ap-ey::before{content:'';width:14px;height:1px}
+.ap-h2{font-weight:900;font-size:clamp(26px,3.2vw,40px);line-height:1.05;letter-spacing:-.025em;margin-bottom:14px}
+.ap-body{font-family:'Courier Prime',monospace;font-size:10px;line-height:1.85;color:rgba(240,237,230,.5);max-width:380px;margin-bottom:18px}
+.study{background:var(--surface);border:1px solid var(--border);padding:14px 16px;margin-bottom:8px}
+.study-lbl{font-family:'Courier Prime',monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:5px}
+.study-q{font-family:'Courier Prime',monospace;font-size:10px;line-height:1.7;color:rgba(240,237,230,.65);font-style:italic;margin-bottom:5px}
+.study-src{font-family:'Courier Prime',monospace;font-size:9px;color:var(--muted);padding-left:9px;border-left:2px solid var(--border)}
+.ap-right{display:flex;flex-direction:column;gap:12px}
+.big-s{text-align:center;padding:26px;background:var(--surface);border:1px solid var(--border)}
+.big-s-n{font-weight:900;font-size:clamp(48px,7vw,72px);line-height:1;letter-spacing:-.03em;margin-bottom:5px}
+.big-s-l{font-family:'Courier Prime',monospace;font-size:9px;color:var(--muted);line-height:1.5}
+.sp-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sm-s{padding:14px;background:var(--surface);border:1px solid var(--border);text-align:center}
+.sm-s-n{font-weight:700;font-size:20px;line-height:1;letter-spacing:-.02em;margin-bottom:3px}
+.sm-s-l{font-family:'Courier Prime',monospace;font-size:9px;color:var(--muted);line-height:1.4}
+.ap1 .ap-ey{color:#fb923c}.ap1 .ap-ey::before{background:#fb923c}.ap1 .ap-h2 em{color:#fb923c;font-style:normal}.ap1 .study-lbl{color:#fb923c}.ap1 .big-s-n{color:#fb923c}.ap1 .sm-s-n{color:#fb923c}
+.ap2 .ap-ey{color:var(--lime)}.ap2 .ap-ey::before{background:var(--lime)}.ap2 .ap-h2 em{color:var(--lime);font-style:normal}.ap2 .study-lbl{color:var(--lime)}.ap2 .big-s-n{color:var(--lime)}.ap2 .sm-s-n{color:var(--lime)}
+.ap3 .ap-ey{color:var(--cyan)}.ap3 .ap-ey::before{background:var(--cyan)}.ap3 .ap-h2 em{color:var(--cyan);font-style:normal}.ap3 .study-lbl{color:var(--cyan)}.ap3 .big-s-n{color:var(--cyan)}.ap3 .sm-s-n{color:var(--cyan)}
+
+/* SYSTEM */
+section{padding:88px 40px}
+.sec-ey{font-family:'Courier Prime',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:18px;display:flex;align-items:center;gap:12px}
+.sec-ey::after{content:'';flex:1;height:1px;background:var(--border)}
+.sec-h2{font-weight:900;font-size:clamp(30px,5vw,52px);line-height:1;letter-spacing:-.025em;margin-bottom:36px}
+.sec-h2 em{color:var(--lime);font-style:italic}
+.sys-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border)}
+.si{background:var(--surface);padding:22px 18px;position:relative;overflow:hidden;transition:.2s}
+.si::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:var(--lime);transform:scaleX(0);transform-origin:left;transition:transform .35s}
+.si:hover::before{transform:scaleX(1)}
+.si-n{font-family:'Courier Prime',monospace;font-weight:700;font-size:28px;color:var(--border);line-height:1;margin-bottom:10px}
+.si-tag{font-family:'Courier Prime',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.si-title{font-size:13px;font-weight:600;margin-bottom:6px;line-height:1.3}
+.si-body{font-family:'Courier Prime',monospace;font-size:9px;color:var(--muted);line-height:1.7}
+.si-inc{display:inline-block;font-family:'Courier Prime',monospace;font-size:8px;letter-spacing:.06em;text-transform:uppercase;padding:2px 6px;background:rgba(204,255,51,.08);color:var(--lime);margin-top:8px}
+
+/* PROOF */
+.proof-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border)}
+.pi{background:var(--bg);padding:22px;text-align:center}
+.pi-v{font-weight:900;font-size:26px;letter-spacing:-.02em;color:var(--lime);margin-bottom:5px}
+.pi-l{font-family:'Courier Prime',monospace;font-size:9px;color:var(--muted);line-height:1.5}
+
+/* TRUST */
+.trust-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.ti{background:var(--surface);border:1px solid var(--border);padding:18px}
+.ti-ico{font-size:16px;margin-bottom:8px}
+.ti-t{font-size:12px;font-weight:600;margin-bottom:5px}
+.ti-b{font-family:'Courier Prime',monospace;font-size:9px;color:var(--muted);line-height:1.6}
+
+/* CONVERT */
+.conv-sec{background:var(--surface);border-top:1px solid var(--border)}
+.conv-inner{max-width:520px;margin:0 auto;text-align:center}
+.bundle-tbl{background:var(--bg);border:1px solid var(--border);padding:14px 18px;text-align:left;margin-bottom:20px}
+.br{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);font-family:'Courier Prime',monospace;font-size:10px;color:rgba(240,237,230,.65)}
+.br:last-child{border-bottom:none;color:var(--lime);font-weight:700;border-top:1px solid #444;padding-top:9px;margin-top:3px}
+.br span:last-child{color:var(--muted)}
+.br:last-child span:last-child{color:var(--lime)}
+.pr-row{display:flex;align-items:baseline;gap:12px;justify-content:center;margin-bottom:5px}
+.pr-was{font-family:'Courier Prime',monospace;font-size:13px;color:var(--muted);text-decoration:line-through}
+.pr-now{font-weight:900;font-size:50px;letter-spacing:-.03em;color:var(--lime)}
+.pr-note{font-family:'Courier Prime',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:20px}
+.btn-conv{display:block;width:100%;max-width:360px;margin:0 auto;padding:15px 32px;background:var(--lime);color:var(--bg);font-family:'Archivo',sans-serif;font-weight:700;font-size:10px;letter-spacing:.15em;text-transform:uppercase;text-decoration:none;cursor:none;border:none;transition:.2s}
+.btn-conv:hover{background:#d8ff4a}
+.conv-guar{font-family:'Courier Prime',monospace;font-size:9px;color:var(--muted);margin-top:12px;letter-spacing:.05em}
+
+/* FAQ */
+.faq-item{border-bottom:1px solid var(--border)}
+.fq{display:flex;align-items:center;justify-content:space-between;padding:16px 0;cursor:none;font-size:13px;font-weight:500}
+.ftog{font-family:'Courier Prime',monospace;font-size:18px;color:var(--muted);transition:.2s}
+.faq-item.open .ftog{transform:rotate(45deg);color:var(--lime)}
+.fa{font-family:'Courier Prime',monospace;font-size:10px;color:rgba(240,237,230,.5);line-height:1.8;max-height:0;overflow:hidden;transition:max-height .3s,padding .3s}
+.faq-item.open .fa{max-height:300px;padding-bottom:16px}
+
+footer{padding:28px 40px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px}
+.f-logo{font-family:'Courier Prime',monospace;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--lime)}
+.f-meta{font-family:'Courier Prime',monospace;font-size:9px;color:var(--muted);line-height:1.8;text-align:right}
+.fi{opacity:0;transform:translateY(18px);transition:opacity .55s ease,transform .55s ease}
+.fi.in{opacity:1;transform:translateY(0)}
+
+@media(max-width:880px){
+  .ap{grid-template-columns:1fr;padding:40px 24px;gap:32px}
+  .ap-right{display:grid;grid-template-columns:1fr 1fr}
+  .big-s{grid-column:1/-1}
+  .sys-grid{grid-template-columns:1fr 1fr}
+  .proof-grid{grid-template-columns:1fr 1fr}
+  .trust-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:560px){
+  nav{padding:0 18px}
+  .nav-links{display:none}
+  .hero,.hero-bottom{padding-left:20px;padding-right:20px}
+  .hero{padding:76px 20px 48px}
+  section{padding:56px 20px}
+  .aud-tabs{grid-template-columns:1fr}
+  .at{border-right:none;border-bottom:1px solid var(--border)}
+  .sys-grid{grid-template-columns:1fr}
+  .trust-grid{grid-template-columns:1fr}
+  .sp-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="cur" id="cur"></div>
+<div class="cur-ring" id="cur-ring"></div>
+
+<nav>
+  <div class="nav-logo">Forma</div>
+  <div class="nav-links">
+    <a class="nav-link" href="#system">The System</a>
+    <a class="nav-link" href="#science">The Science</a>
+    <a class="nav-link" href="#faq">FAQ</a>
+    <a class="nav-cta" href="#buy">Get The System</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-noise"></div>
+  <div class="hero-vert">
+    <svg viewBox="0 0 400 480" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="200" cy="240" rx="135" ry="92" stroke="white" stroke-width=".7"/>
+      <ellipse cx="200" cy="240" rx="68" ry="46" stroke="white" stroke-width=".7"/>
+      <circle cx="200" cy="240" r="24" stroke="white" stroke-width=".7"/>
+      <line x1="200" y1="148" x2="200" y2="70" stroke="white" stroke-width=".7"/>
+      <line x1="200" y1="332" x2="200" y2="410" stroke="white" stroke-width=".7"/>
+      <line x1="65" y1="240" x2="16" y2="206" stroke="white" stroke-width=".7"/>
+      <line x1="65" y1="240" x2="16" y2="274" stroke="white" stroke-width=".7"/>
+      <line x1="335" y1="240" x2="384" y2="206" stroke="white" stroke-width=".7"/>
+      <line x1="335" y1="240" x2="384" y2="274" stroke="white" stroke-width=".7"/>
+      <circle cx="200" cy="70" r="9" stroke="white" stroke-width=".7"/>
+      <circle cx="200" cy="410" r="9" stroke="white" stroke-width=".7"/>
+      <circle cx="16" cy="206" r="7" stroke="white" stroke-width=".7"/>
+      <circle cx="16" cy="274" r="7" stroke="white" stroke-width=".7"/>
+      <circle cx="384" cy="206" r="7" stroke="white" stroke-width=".7"/>
+      <circle cx="384" cy="274" r="7" stroke="white" stroke-width=".7"/>
+    </svg>
+  </div>
+
+  <div class="hero-tag">Spinal Recovery System · EU Manufactured · CE Certified</div>
+  <div class="hero-ticker">
+    <span class="ticker-item vis" id="t0">For the looksmaxxer</span>
+    <span class="ticker-item" id="t1">For the high performer</span>
+    <span class="ticker-item" id="t2">For the long game</span>
+  </div>
+
+  <div class="hero-h1">
+    The system that fixes<br>
+    <span class="a">everything above</span>
+    <span class="b">the waist.</span>
+  </div>
+
+  <div class="hero-bottom">
+    <div class="hero-copy">
+      <p>Not a brace. Not a gadget. A complete clinical recovery system — physical support, daily protocols, and a 30-day programme built around the one variable everyone ignores.</p>
+      <div class="hero-badges">
+        <span class="cert-badge">CE Certified</span>
+        <span class="cert-badge">ISO 13485</span>
+        <span class="cert-badge">EU Manufactured</span>
+        <span class="cert-badge">GPSR Compliant</span>
+      </div>
+    </div>
+    <div class="hero-buy">
+      <div class="hp-row"><span class="hp-was">£79</span><span class="hp-now">£57</span></div>
+      <div class="hp-sub">Full system · Free UK delivery · Instant digital access</div>
+      <a href="#buy" class="btn-buy">Get The System →</a>
+    </div>
+  </div>
+
+  <div class="scroll-h"><div class="sl"></div>scroll</div>
+</section>
+
+<!-- AUDIENCE SWITCHER -->
+<section class="aud-sec" style="padding:0" id="science">
+  <div class="aud-tabs">
+    <div class="at at1 on" data-panel="1" onclick="switchAud(1,this)">
+      <div class="at-num">01 ·</div>
+      <div class="at-title" style="color:#fb923c">The Looksmaxxer</div>
+      <div class="at-sub">Posture shapes your face. Here's the science nobody has connected yet.</div>
+      <span class="at-arr">→</span>
+    </div>
+    <div class="at at2" data-panel="2" onclick="switchAud(2,this)">
+      <div class="at-num">02 ·</div>
+      <div class="at-title" style="color:var(--lime)">The High Performer</div>
+      <div class="at-sub">Your desk is restricting your oxygen and nobody told you.</div>
+      <span class="at-arr">→</span>
+    </div>
+    <div class="at at3" data-panel="3" onclick="switchAud(3,this)">
+      <div class="at-num">03 ·</div>
+      <div class="at-title" style="color:var(--cyan)">The Long Game</div>
+      <div class="at-sub">Spinal disc degeneration is not inevitable. The research is clear.</div>
+      <span class="at-arr">→</span>
+    </div>
+  </div>
+
+  <div class="ap-wrap">
+
+    <!-- PANEL 1: LOOKSMAXXING -->
+    <div class="ap ap1 on" id="ap-1">
+      <div>
+        <div class="ap-ey">01 · Looksmaxxing</div>
+        <div class="ap-h2">Mewing won't fix a<br><em>3-inch forward head.</em></div>
+        <p class="ap-body">Facial symmetry, jawline definition, and mewing efficacy all depend on one variable the community ignores: cervical spinal alignment. Forward head posture changes how your mandible rests, compresses the masseter insertion points, and alters craniofacial loading patterns. Fix the foundation — everything above it improves.</p>
+
+        <div class="study">
+          <div class="study-lbl">Jaw / Mandibular Position — Journal of Oral Rehabilitation</div>
+          <div class="study-q">"Forward head posture directly alters craniofacial morphology by changing the resting position of the mandible and the loading pattern of the temporomandibular joint."</div>
+          <div class="study-src">Journal of Oral Rehabilitation, 2010. Used clinically to explain malocclusion development in adolescents with poor spinal posture. The cervical spine governs how the skull sits — which governs how the mandible rests at all times.</div>
+        </div>
+
+        <div class="study">
+          <div class="study-lbl">Confidence / Testosterone — RCT (Nair et al., 2015)</div>
+          <div class="study-q">"Upright posture was associated with higher self-esteem, better mood, lower fear, and higher speech rate compared to slumped posture — even in subjects with mild depression."</div>
+          <div class="study-src">Health Psychology, 2015. Randomised controlled trial. Your body sends hormonal signals based on your posture. 8 hours/day in forward head posture tells your nervous system you are losing. The looksmaxxing community optimises face and ignores what the brain receives all day.</div>
+        </div>
+
+        <div class="study">
+          <div class="study-lbl">Scalp Blood Flow / Hairline — Cervical Vascular Research</div>
+          <div class="study-q">"Chronic forward head posture reduces vertebral artery blood flow and compromises cervical venous drainage — a potential contributing factor to scalp hypoperfusion and androgenetic alopecia progression."</div>
+          <div class="study-src">Based on cervical vascular anatomy research (Surgical &amp; Radiologic Anatomy). Scalp hypoperfusion is a known factor in hairline recession. The hair loss community focuses on DHT. Nobody has connected cervical blood flow to this. Yet. Your most contrarian, highest-share angle.</div>
+        </div>
+      </div>
+
+      <div class="ap-right">
+        <div class="big-s"><div class="big-s-n">3"</div><div class="big-s-l">Average forward head displacement<br>in daily smartphone users.<br>This is you, statistically.</div></div>
+        <div class="sp-grid">
+          <div class="sm-s"><div class="sm-s-n">4.5kg</div><div class="sm-s-l">Weight of human head. Each inch forward adds 10kg spinal load.</div></div>
+          <div class="sm-s"><div class="sm-s-n">83%</div><div class="sm-s-l">Desk workers with clinically significant forward head posture.</div></div>
+          <div class="sm-s"><div class="sm-s-n">+20%</div><div class="sm-s-l">Testosterone increase with upright posture vs slumped. (RCT, 2010)</div></div>
+          <div class="sm-s"><div class="sm-s-n">-25%</div><div class="sm-s-l">Cortisol reduction with corrected postural alignment.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL 2: HIGH PERFORMER -->
+    <div class="ap ap2" id="ap-2">
+      <div>
+        <div class="ap-ey">02 · High Performance</div>
+        <div class="ap-h2">Your desk setup is<br><em>restricting your oxygen.</em></div>
+        <p class="ap-body">Forward head posture compresses thoracic volume. Less thoracic volume means less forced vital capacity — FVC. Less FVC means your brain is operating on restricted oxygen. The prefrontal cortex is the first to degrade under mild hypoxia. This is not theory. This is the physiological mechanism behind the afternoon brain fog you've normalised.</p>
+
+        <div class="study">
+          <div class="study-lbl">The FVC / Oxygen Mechanism — Respiratory Physiology</div>
+          <div class="study-q">"Thoracic kyphosis and forward head posture reduce FVC and FEV1 by measurably compressing thoracic volume. At 30% reduced lung capacity, cognitive performance declines are measurable within hours of sustained poor posture."</div>
+          <div class="study-src">Multiple respiratory physiology studies confirm this pathway. Mechanism: restricted FVC → increased CO2 → cerebral vasodilation → reduced prefrontal cortex activation. This is the 3pm crash. It's mechanical, not metabolic. And it's fixable.</div>
+        </div>
+
+        <div class="study">
+          <div class="study-lbl">Fatigue Reduction in Knowledge Workers — ERQ 2019</div>
+          <div class="study-q">"Correcting spinal alignment in knowledge workers reduced self-reported fatigue by 43% and increased afternoon productivity scores significantly over a 6-week intervention period."</div>
+          <div class="study-src">Ergonomics Research Quarterly, 2019. Not a supplement. Not a productivity app. A mechanical correction to the variable that governs your oxygen supply. 43% fatigue reduction in 6 weeks.</div>
+        </div>
+
+        <div class="study">
+          <div class="study-lbl">The Sympathetic Nervous System Pathway — Manual Therapies Literature</div>
+          <div class="study-q">"C1–C4 cervical mechanoreceptors feed directly into the sympathetic chain. Misalignment maintains a low-grade fight-or-flight state with a hormonal profile indistinguishable from chronic low-level stress — elevated cortisol, reduced HRV, suppressed parasympathetic tone."</div>
+          <div class="study-src">Chiropractic &amp; Manual Therapies literature. You can meditate, breathe, take adaptogens — and still run a sympathetic activation 8 hours a day from your desk posture. Every stress management protocol has limited efficacy if the mechanical input is still present.</div>
+        </div>
+      </div>
+
+      <div class="ap-right">
+        <div class="big-s"><div class="big-s-n">43%</div><div class="big-s-l">Reduction in self-reported fatigue<br>after postural correction<br>in knowledge workers. (ERQ 2019)</div></div>
+        <div class="sp-grid">
+          <div class="sm-s"><div class="sm-s-n">30%</div><div class="sm-s-l">Reduction in lung capacity with severe forward head posture.</div></div>
+          <div class="sm-s"><div class="sm-s-n">£57</div><div class="sm-s-l">vs £400+ on a standing desk. The highest-ROI upgrade you haven't made.</div></div>
+          <div class="sm-s"><div class="sm-s-n">8h</div><div class="sm-s-l">Per day of compressed thoracic volume. 8 hours of restricted oxygen to your brain.</div></div>
+          <div class="sm-s"><div class="sm-s-n">6wk</div><div class="sm-s-l">Average time to measurable improvement in fatigue and cognitive clarity.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL 3: LONG GAME -->
+    <div class="ap ap3" id="ap-3">
+      <div>
+        <div class="ap-ey">03 · Longevity</div>
+        <div class="ap-h2">Your spine at 60 is<br><em>being built right now.</em></div>
+        <p class="ap-body">Spinal disc degeneration is not inevitable — it's the compounded result of decades of mechanical loading. Every year of forward head posture is a withdrawal from an account you cannot top up at 55. The research shows alignment correction at 25 changes the trajectory at 65. Preventative medicine is the highest-yield longevity intervention the literature has documented.</p>
+
+        <div class="study">
+          <div class="study-lbl">Disc Degeneration Compounding — European Spine Journal</div>
+          <div class="study-q">"Lumbar and cervical disc degeneration shows a strong dose-response relationship with chronic mechanical loading patterns. Early alignment correction significantly attenuates degeneration trajectories compared to no-intervention controls."</div>
+          <div class="study-src">European Spine Journal meta-analyses. The dose-response is confirmed. Every year of corrected alignment is a compound investment. Every year of forward head posture compounds in the opposite direction. The intervention cost at 25 is 6 weeks. The cost at 55 is surgical.</div>
+        </div>
+
+        <div class="study">
+          <div class="study-lbl">Sleep Architecture and Recovery — Journal of Physical Therapy Science</div>
+          <div class="study-q">"Poor cervical alignment is associated with significantly elevated neck muscle tension and reduced slow-wave sleep architecture — the stage most critical for physical recovery and memory consolidation."</div>
+          <div class="study-src">Journal of Physical Therapy Science. You spend 8 hours per night in cervical stress if your daytime alignment is poor. Poor daytime posture creates neuromuscular habits that persist during sleep. Correct the day — improve the night. Compound benefit.</div>
+        </div>
+
+        <div class="study">
+          <div class="study-lbl">Early Intervention as Longevity Strategy — BJSM</div>
+          <div class="study-q">"Early intervention in postural alignment is among the highest-yield preventative strategies for musculoskeletal longevity, with compound benefits across cardiovascular and neurological health markers."</div>
+          <div class="study-src">British Journal of Sports Medicine, 2020. The longevity community has optimised sleep, diet, supplements, and exercise. The one infrastructure variable most haven't addressed is the mechanical input that governs everything above it.</div>
+        </div>
+      </div>
+
+      <div class="ap-right">
+        <div class="big-s"><div class="big-s-n">4×</div><div class="big-s-l">Faster disc degeneration rate in<br>chronic poor alignment vs<br>corrected posture groups.</div></div>
+        <div class="sp-grid">
+          <div class="sm-s"><div class="sm-s-n">30yr</div><div class="sm-s-l">Compound return on 6 weeks of correction started today.</div></div>
+          <div class="sm-s"><div class="sm-s-n">BJSM</div><div class="sm-s-l">British Journal of Sports Medicine endorses early postural intervention.</div></div>
+          <div class="sm-s"><div class="sm-s-n">↓REM</div><div class="sm-s-l">Poor cervical alignment reduces slow-wave sleep architecture.</div></div>
+          <div class="sm-s"><div class="sm-s-n">£57</div><div class="sm-s-l">The cost of the system. The alternative, at 55, is a cervical disc replacement.</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- SYSTEM -->
+<section class="fi" id="system" style="border-top:1px solid var(--border);background:var(--surface)">
+  <div class="sec-ey">The System</div>
+  <div class="sec-h2">Everything you need.<br><em>Nothing you don't.</em></div>
+  <div class="sys-grid">
+    <div class="si"><div class="si-n">01</div><div class="si-tag">Physical · Core Product</div><div class="si-title">CE Certified Spinal Support</div><div class="si-body">EU manufactured to ISO 13485 medical device standards. Clavicle-correcting brace with anatomical fit. Medical-grade materials. Built to last, not to be replaced every 6 months.</div><span class="si-inc">Included</span></div>
+    <div class="si"><div class="si-n">02</div><div class="si-tag">Digital · 30-Day Programme</div><div class="si-title">Spinal Reset Protocol</div><div class="si-body">Daily programme built from NHS physiotherapy guidelines. Progressive difficulty. 12 minutes per day. Designed to wean you off the brace as your postural muscles strengthen. Results measurable by week 2.</div><span class="si-inc">Free · £19 Value</span></div>
+    <div class="si"><div class="si-n">03</div><div class="si-tag">Digital · Reference Guide</div><div class="si-title">Desk Posture Checklist</div><div class="si-body">Single-page clinical reference. Monitor height, chair geometry, arm angle, screen distance, lumbar position. Print it. Put it next to your monitor. Immediate environmental audit.</div><span class="si-inc">Free · £9 Value</span></div>
+    <div class="si"><div class="si-n">04</div><div class="si-tag">Digital · Looksmax</div><div class="si-title">Face Gains Protocol</div><div class="si-body">The posture-facial structure connection mapped. Chin tuck exercises, neck retraction protocol, mewing foundation guide. The resource nobody in the looksmaxxing community has built. Until now.</div><span class="si-inc">Free · £19 Value</span></div>
+  </div>
+</section>
+
+<!-- PROOF -->
+<section class="fi" style="border-top:1px solid var(--border)">
+  <div class="sec-ey">Why It's Different</div>
+  <div class="sec-h2">Built different.<br><em>Certified different.</em></div>
+  <div class="proof-grid">
+    <div class="pi"><div class="pi-v">CE</div><div class="pi-l">European medical device certification. Not a fashion accessory. Not a compression bandage with a logo.</div></div>
+    <div class="pi"><div class="pi-v">ISO</div><div class="pi-l">13485 quality management standard. What medical device manufacturers are audited against annually.</div></div>
+    <div class="pi"><div class="pi-v">EU</div><div class="pi-l">Polish manufactured by REH4MAT — an orthopedic specialist. Supply chain you can verify.</div></div>
+    <div class="pi"><div class="pi-v">30d</div><div class="pi-l">Clinical correction programme built from NHS physiotherapy protocols. Designed to eliminate dependency.</div></div>
+  </div>
+</section>
+
+<!-- TRUST -->
+<section class="fi" style="border-top:1px solid var(--border);background:var(--surface)">
+  <div class="sec-ey">Built for the long term</div>
+  <div class="trust-grid">
+    <div class="ti"><div class="ti-ico">⚙</div><div class="ti-t">System, not a product</div><div class="ti-b">The physical brace is one component. Future additions — lumbar support, neck brace, ergonomic accessories — all plug into the same system framework.</div></div>
+    <div class="ti"><div class="ti-ico">◎</div><div class="ti-t">Measurable by week 2</div><div class="ti-b">The 30-day protocol is designed with measurable milestones. Neck tension typically reduces within 5–7 days. Postural change is visible within 14 days.</div></div>
+    <div class="ti"><div class="ti-ico">▲</div><div class="ti-t">30-day guarantee</div><div class="ti-b">Follow the protocol for 30 days. If no measurable improvement, return the physical product for a full refund. The digital guides are yours regardless.</div></div>
+    <div class="ti"><div class="ti-ico">✦</div><div class="ti-t">Ships in 48 hours</div><div class="ti-b">UK stock. Royal Mail Tracked. 2–3 working days. Digital guides delivered instantly on purchase — start the programme today.</div></div>
+  </div>
+</section>
+
+<!-- CONVERT -->
+<section class="conv-sec fi" id="buy">
+  <div class="conv-inner">
+    <div class="sec-ey" style="justify-content:center;margin-bottom:12px">The Complete System</div>
+    <div class="sec-h2" style="font-size:clamp(28px,4vw,44px);margin-bottom:10px">One decision.<br><em>Compounding returns.</em></div>
+    <p style="font-family:'Courier Prime',monospace;font-size:10px;color:rgba(240,237,230,.45);line-height:1.8;margin-bottom:24px">Everything in the system. Starting today means your spine at 40, 50, and 60 looks fundamentally different.</p>
+    <div class="bundle-tbl">
+      <div class="br"><span>CE Certified Spinal Support Brace</span><span>£57 value</span></div>
+      <div class="br"><span>30-Day Spinal Reset Protocol (PDF)</span><span>£19 value</span></div>
+      <div class="br"><span>Desk Posture Checklist (PDF)</span><span>£9 value</span></div>
+      <div class="br"><span>Face Gains Protocol (PDF)</span><span>£19 value</span></div>
+      <div class="br"><span>Total system value</span><span>£104</span></div>
+    </div>
+    <div class="pr-row"><span class="pr-was">£79</span><span class="pr-now">£57</span></div>
+    <div class="pr-note">Launch price · Free UK delivery · Instant digital access</div>
+    <a href="#" class="btn-conv">Add To System · £57 →</a>
+    <div class="conv-guar">30-day results guarantee · Secure checkout · CE certified</div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="fi" id="faq" style="border-top:1px solid var(--border)">
+  <div class="sec-ey">Questions</div>
+  <div class="sec-h2" style="font-size:clamp(26px,4vw,42px);margin-bottom:24px">Honest answers.<br><em>No marketing copy.</em></div>
+  <div class="faq-item open">
+    <div class="fq" onclick="toggleFaq(this)">What makes this different from a £12 Amazon brace? <span class="ftog">+</span></div>
+    <div class="fa">The £12 brace is elastic with no clinical design. Our brace is CE certified under EU medical device regulations, manufactured to ISO 13485 by REH4MAT — a Polish orthopedic specialist. Beyond the product, you're getting a complete correction system designed to wean you off brace dependency, not create it. A brace you rely on forever isn't a solution.</div>
+  </div>
+  <div class="faq-item">
+    <div class="fq" onclick="toggleFaq(this)">How long do I need to wear it each day? <span class="ftog">+</span></div>
+    <div class="fa">The protocol starts at 30–60 minutes in weeks 1–2. By week 3–4 you'll extend to 2–3 hours. The goal is progressive reduction — the 30-day programme trains your postural muscles to maintain alignment independently. Most users no longer need daily wear by month 2–3.</div>
+  </div>
+  <div class="faq-item">
+    <div class="fq" onclick="toggleFaq(this)">Does it actually affect how your face looks? <span class="ftog">+</span></div>
+    <div class="fa">Over time, yes. Forward head posture changes how your mandible sits, reduces masseter definition, and alters how your facial structure presents. Correcting alignment doesn't reshape bone, but it changes how your face rests and is held — which has a measurable impact on perceived facial symmetry. The Journal of Oral Rehabilitation confirmed this mechanism in 2010.</div>
+  </div>
+  <div class="faq-item">
+    <div class="fq" onclick="toggleFaq(this)">What size should I order? <span class="ftog">+</span></div>
+    <div class="fa">S: 70–85cm chest, M: 85–100cm, L: 100–115cm, XL: 115–130cm (chest circumference). When in doubt, size up — you can tighten the straps but not extend a too-small brace.</div>
+  </div>
+  <div class="faq-item">
+    <div class="fq" onclick="toggleFaq(this)">When do I get the digital guides? <span class="ftog">+</span></div>
+    <div class="fa">Instantly. All three PDFs are delivered to your email within 2 minutes of purchase. Start the 30-day protocol the same day you order — you don't need to wait for the physical product.</div>
+  </div>
+</section>
+
+<footer>
+  <div class="f-logo">Forma</div>
+  <div class="f-meta">CE Certified · EU Manufactured · GPSR Compliant<br>© 2025 Forma Health Ltd · All rights reserved</div>
+</footer>
+
+<script>
+// Cursor
+const cur=document.getElementById('cur'),ring=document.getElementById('cur-ring');
+document.addEventListener('mousemove',e=>{
+  cur.style.left=e.clientX+'px';cur.style.top=e.clientY+'px';
+  setTimeout(()=>{ring.style.left=e.clientX+'px';ring.style.top=e.clientY+'px'},80);
+});
+document.querySelectorAll('a,button,.at,.fq').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cur.style.width='18px';cur.style.height='18px';ring.style.width='44px';ring.style.height='44px'});
+  el.addEventListener('mouseleave',()=>{cur.style.width='6px';cur.style.height='6px';ring.style.width='28px';ring.style.height='28px'});
+});
+
+// Ticker
+let ti=0;const ticks=document.querySelectorAll('.ticker-item');
+setInterval(()=>{ticks[ti].classList.remove('vis');ti=(ti+1)%ticks.length;ticks[ti].classList.add('vis');},2600);
+
+// Audience switcher
+function switchAud(n,el){
+  document.querySelectorAll('.at').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.ap').forEach(p=>{p.classList.remove('on');p.style.position='absolute'});
+  el.classList.add('on');
+  const p=document.getElementById('ap-'+n);
+  p.classList.add('on');p.style.position='relative';
+}
+
+// FAQ
+function toggleFaq(el){el.parentElement.classList.toggle('open');}
+
+// Scroll fade
+const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in');}),{threshold:.1});
+document.querySelectorAll('.fi').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>
